@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+    id("kotlin-kapt")
 }
 
 android {
@@ -18,8 +21,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            isDebuggable = true
+        }
+
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -33,6 +41,11 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -45,4 +58,23 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
+
+    implementation(libs.lifecycle.livedata.ktx)
+
+    // Hilt Dependencies
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    kapt(libs.hilt.compilers)
+
+    implementation(libs.navigation.ui)
+    implementation(libs.navigation.fragment)
+
+    implementation(libs.timber)
 }
