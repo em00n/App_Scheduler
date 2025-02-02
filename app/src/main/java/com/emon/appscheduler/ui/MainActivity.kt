@@ -5,7 +5,6 @@ import android.app.TimePickerDialog
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -15,20 +14,14 @@ import com.emon.appscheduler.data.model.AppInfo
 import com.emon.appscheduler.data.model.Schedule
 import com.emon.appscheduler.databinding.ActivityMainBinding
 import com.emon.appscheduler.databinding.SchedulerDialogBinding
-import com.emon.appscheduler.scheduling.AppScheduler
 import com.emon.appscheduler.utils.extensions.getInstalledAppsInfo
 import com.emon.appscheduler.utils.extensions.getNextScheduledTime
 import com.emon.appscheduler.utils.extensions.timeFormat
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import java.util.Calendar
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>() {
-
-    @Inject
-    lateinit var appScheduler: AppScheduler
 
     private lateinit var navController: NavController
     private val viewModel: ScheduleViewModel by viewModels()
@@ -86,11 +79,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                         scheduleTime = scheduledTime!!
                     )
 
-                    lifecycleScope.launch {
-                        val newId = viewModel.addSchedule(schedule).toInt()
-                        appScheduler.setAppSchedule(schedule.copy(id = newId))
-                    }
-
+                    viewModel.addSchedule(schedule)
                     Toast.makeText(this, getString(R.string.app_scheduled), Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
 
