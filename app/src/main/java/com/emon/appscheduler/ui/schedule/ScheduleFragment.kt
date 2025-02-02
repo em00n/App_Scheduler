@@ -1,4 +1,4 @@
-package com.emon.appscheduler.ui.scheduler
+package com.emon.appscheduler.ui.schedule
 
 import android.os.Bundle
 import com.emon.appscheduler.base.BaseFragment
