@@ -2,4 +2,12 @@
     <string name="app_name">App Scheduler</string>
     <string name="schedule">Schedule</string>
     <string name="history">History</string>
+    <string name="add_schedule">Add Schedule</string>
+    <string name="select">Select</string>
+    <string name="time">Time</string>
+    <string name="content_description">contentDescription</string>
+    <string name="set_app_schedule">Set App Schedule</string>
+    <string name="select_app">Select App</string>
+    <string name="app_scheduled">App Scheduled</string>
+    <string name="select_time">Select Time</string>
 </resources>
