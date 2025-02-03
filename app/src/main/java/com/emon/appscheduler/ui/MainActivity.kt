@@ -79,9 +79,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                         scheduleTime = scheduledTime!!
                     )
 
-                    viewModel.addSchedule(schedule)
-                    Toast.makeText(this, getString(R.string.app_scheduled), Toast.LENGTH_SHORT).show()
-                    dialog.dismiss()
+                    viewModel.checkTimeAvailability(schedule.scheduleTime) { isAvailable ->
+                        if (isAvailable) {
+                            viewModel.addSchedule(schedule)
+                            Toast.makeText(this, getString(R.string.app_scheduled), Toast.LENGTH_SHORT).show()
+                            dialog.dismiss()
+                        } else {
+                            Toast.makeText(this, "This time slot is already taken!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
 
                 } else Toast.makeText(this, getString(R.string.select_time), Toast.LENGTH_SHORT).show()
             } else Toast.makeText(this, getString(R.string.select_app), Toast.LENGTH_SHORT).show()

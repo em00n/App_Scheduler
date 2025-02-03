@@ -1,4 +1,4 @@
-package com.emon.mycontactapp.base
+package com.emon.appscheduler.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
