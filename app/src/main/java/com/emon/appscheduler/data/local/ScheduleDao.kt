@@ -28,6 +28,12 @@ interface ScheduleDao {
     @Query("SELECT * FROM schedule_table WHERE status = :status")
     fun getSchedulesByStatus(status: ScheduleStatus): Flow<List<Schedule>>
 
-    @Query("SELECT * FROM schedule_table WHERE scheduleTime = :scheduleTime")
-    fun isTimeAvailable(scheduleTime: Long,): Flow<List<Schedule>>
+    @Query("SELECT COUNT(*) FROM schedule_table WHERE scheduleTime = :newTime AND status = 'PENDING'")
+    suspend fun isTimeAvailable(newTime: Long): Int
+
+    @Query("UPDATE schedule_table SET status = :status WHERE id = :scheduleId")
+    suspend fun updateStatus(scheduleId: Int, status: ScheduleStatus)
+
+    @Query("UPDATE schedule_table SET scheduleTime = :newTime WHERE id = :scheduleId")
+    suspend fun updateScheduleTime(scheduleId: Int, newTime: Long)
 }

@@ -6,15 +6,15 @@ import kotlinx.coroutines.flow.Flow
 
 interface ScheduleRepository {
 
-    suspend fun getAllSchedules(): Flow<List<Schedule>>
+    fun getAllSchedules(): Flow<List<Schedule>>
 
     suspend fun insert(schedule: Schedule):Long
 
-    suspend fun update(schedule: Schedule)
+    fun getSchedulesByStatus(scheduleStatus: ScheduleStatus): Flow<List<Schedule>>
 
-    suspend fun delete(schedule: Schedule)
+    suspend fun isTimeAvailable(scheduleTime: Long): Boolean
 
-    suspend fun getSchedulesByStatus(scheduleStatus: ScheduleStatus)
+    suspend fun updateStatus(scheduleId: Int, scheduleStatus: ScheduleStatus)
 
-    suspend fun isTimeAvailable(scheduleTime: Long, excludeId: Int?)
+    suspend fun updateScheduleTime(scheduleId: Int, newTime: Long)
 }

@@ -10,26 +10,26 @@ class ScheduleRepoImpl @Inject constructor(
     private val scheduleDao: ScheduleDao
 ) : ScheduleRepository {
 
-    override suspend fun getAllSchedules(): Flow<List<Schedule>> {
+    override fun getAllSchedules(): Flow<List<Schedule>> {
         return scheduleDao.getAll()
     }
     override suspend fun insert(schedule: Schedule):Long {
         return scheduleDao.insert(schedule)
     }
 
-    override suspend fun update(schedule: Schedule) {
-        scheduleDao.update(schedule)
+    override fun getSchedulesByStatus(scheduleStatus: ScheduleStatus): Flow<List<Schedule>>{
+        return scheduleDao.getSchedulesByStatus(scheduleStatus)
     }
 
-    override suspend fun delete(schedule: Schedule) {
-        scheduleDao.delete(schedule)
+    override suspend fun isTimeAvailable(scheduleTime: Long):Boolean {
+        return scheduleDao.isTimeAvailable(scheduleTime) == 0
     }
 
-    override suspend fun getSchedulesByStatus(scheduleStatus: ScheduleStatus) {
-        scheduleDao.getSchedulesByStatus(scheduleStatus)
+    override suspend fun updateStatus(scheduleId: Int, scheduleStatus: ScheduleStatus){
+        return scheduleDao.updateStatus(scheduleId, scheduleStatus)
     }
 
-    override suspend fun isTimeAvailable(scheduleTime: Long, excludeId: Int?) {
-        scheduleDao.isTimeAvailable(scheduleTime)
+    override suspend fun updateScheduleTime(scheduleId: Int, newTime: Long){
+        return scheduleDao.updateScheduleTime(scheduleId, newTime)
     }
 }
