@@ -36,6 +36,22 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
+    fun updateScheduleStatus(schedule: Schedule) {
+        viewModelScope.launch {
+            scheduleUseCase.updateScheduleStatus(schedule.id, ScheduleStatus.CANCEL)
+            appScheduler.cancelAppSchedule(schedule)
+            getScheduleList(ScheduleStatus.PENDING)
+        }
+    }
+
+    fun updateScheduleTime(schedule: Schedule) {
+        viewModelScope.launch {
+            scheduleUseCase.updateScheduleTime(schedule.id,schedule.scheduleTime)
+            appScheduler.modifyAppSchedule(schedule)
+            getScheduleList(ScheduleStatus.PENDING)
+        }
+    }
+
     fun getScheduleList(scheduleStatus: ScheduleStatus) {
         viewModelScope.launch {
             scheduleUseCase.getSchedulesByStatus(scheduleStatus).collect { result ->
