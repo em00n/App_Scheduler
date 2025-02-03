@@ -4,7 +4,9 @@ import android.app.AlertDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -14,10 +16,13 @@ import com.emon.appscheduler.data.model.AppInfo
 import com.emon.appscheduler.data.model.Schedule
 import com.emon.appscheduler.databinding.ActivityMainBinding
 import com.emon.appscheduler.databinding.SchedulerDialogBinding
+import com.emon.appscheduler.utils.AppConstants
 import com.emon.appscheduler.utils.extensions.getInstalledAppsInfo
 import com.emon.appscheduler.utils.extensions.getNextScheduledTime
 import com.emon.appscheduler.utils.extensions.timeFormat
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 @AndroidEntryPoint
@@ -25,6 +30,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     private lateinit var navController: NavController
     private val viewModel: ScheduleViewModel by viewModels()
+    private var isDoubleBackPressToExit = false
 
     override fun viewBindingLayout(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
 
@@ -33,9 +39,29 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.mainNavHost) as NavHostFragment
         navController = navHostFragment.navController
         binding.bottomNav.setupWithNavController(navController)
+        setupOnBackPressed()
 
         binding.addScheduleButton.setOnClickListener {
             openSchedulerDialog()
+        }
+    }
+
+    private fun setupOnBackPressed() {
+        val callback = this.onBackPressedDispatcher.addCallback(this) {
+            handleBackPressed()
+        }
+        callback.isEnabled = true
+    }
+
+    private fun handleBackPressed() {
+        if (isDoubleBackPressToExit) {
+            finish()
+        } else {
+            isDoubleBackPressToExit = true
+            lifecycleScope.launch {
+                delay(AppConstants.doublePressAppExitDelayTime)
+                isDoubleBackPressToExit = false
+            }
         }
     }
 
