@@ -19,6 +19,7 @@ class AppScheduler @Inject constructor(
 
         val intent = Intent(context, AppLaunchReceiver::class.java).apply {
             putExtra("packageName", schedule.appPackageName)
+            putExtra("scheduleId", schedule.id)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
