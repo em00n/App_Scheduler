@@ -9,4 +9,5 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 interface AppLaunchReceiverEntryPoint {
     fun scheduleUseCase(): ScheduleUseCase
+    fun appScheduler(): AppScheduler
 }
