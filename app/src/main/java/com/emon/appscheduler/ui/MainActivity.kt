@@ -1,10 +1,16 @@
 package com.emon.appscheduler.ui
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.TimePickerDialog
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -42,7 +48,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         setupOnBackPressed()
 
         binding.addScheduleButton.setOnClickListener {
-            openSchedulerDialog()
+            if (!checkFloatingPermission()) {
+                showMessageForFloatingPermission()
+            }else{
+                openSchedulerDialog()
+            }
         }
     }
 
@@ -61,6 +71,59 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             lifecycleScope.launch {
                 delay(AppConstants.doublePressAppExitDelayTime)
                 isDoubleBackPressToExit = false
+            }
+        }
+    }
+
+    // Helper method for checking overlay (floating) permission
+    private fun checkFloatingPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Settings.canDrawOverlays(this)
+        } else {
+            true // Permission not required for lower versions
+        }
+    }
+
+    // Request overlay permission
+    private fun requestFloatingPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            startActivityFloatingPermission.launch(intent)
+        }
+    }
+
+    // dialog explaining why overlay permission is needed
+    private fun showMessageForFloatingPermission() {
+        AlertDialog.Builder(this)
+            .setTitle("Enable Overlay Permission")
+            .setMessage(
+                "To allow background app launching, enable 'Display over other apps' permission. " +
+                        "This is required to keep the scheduled app launch working even when your app is not active."
+            )
+            .setPositiveButton("Grant Permission") { dialog, _ ->
+                requestFloatingPermission()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
+    // Initialize ActivityResultLauncher
+    private val startActivityFloatingPermission = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // Permission granted
+        } else {
+            // If permission is not granted
+            if (!checkFloatingPermission()) {
+                showMessageForFloatingPermission()
             }
         }
     }
