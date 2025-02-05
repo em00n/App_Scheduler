@@ -1,6 +1,7 @@
 package com.emon.appscheduler.ui.history
 
 import android.os.Bundle
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -36,6 +37,7 @@ class HistoryFragment : BaseFragment<FragmentHistoryBinding>() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.scheduleList.collect { schedules ->
+                    binding.noDataIV.isVisible = schedules.isEmpty()
                     adapter.submitList(schedules)
                 }
             }

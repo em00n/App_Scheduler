@@ -18,4 +18,16 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/item_schedule_list" />
 
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/noDataIV"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/no_data"
+        android:contentDescription="@string/content_description"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
