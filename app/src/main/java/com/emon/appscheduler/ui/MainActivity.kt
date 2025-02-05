@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
@@ -77,37 +76,28 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     // Helper method for checking overlay (floating) permission
     private fun checkFloatingPermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Settings.canDrawOverlays(this)
-        } else {
-            true // Permission not required for lower versions
-        }
+        return Settings.canDrawOverlays(this)
     }
 
     // Request overlay permission
     private fun requestFloatingPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val intent = Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:$packageName")
-            )
-            startActivityFloatingPermission.launch(intent)
-        }
+        val intent = Intent(
+            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+            Uri.parse("package:$packageName")
+        )
+        startActivityFloatingPermission.launch(intent)
     }
 
     // dialog explaining why overlay permission is needed
     private fun showMessageForFloatingPermission() {
         AlertDialog.Builder(this)
-            .setTitle("Enable Overlay Permission")
-            .setMessage(
-                "To allow background app launching, enable 'Display over other apps' permission. " +
-                        "This is required to keep the scheduled app launch working even when your app is not active."
-            )
-            .setPositiveButton("Grant Permission") { dialog, _ ->
+            .setTitle(getString(R.string.enable_overlay_permission))
+            .setMessage(getString(R.string.message_for_floating_permission))
+            .setPositiveButton(getString(R.string.grant_permission)) { dialog, _ ->
                 requestFloatingPermission()
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
             .create()
@@ -174,7 +164,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                             Toast.makeText(this, getString(R.string.app_scheduled), Toast.LENGTH_SHORT).show()
                             dialog.dismiss()
                         } else {
-                            Toast.makeText(this, "This time slot is already taken!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, getString(R.string.this_time_slot_is_already_taken), Toast.LENGTH_SHORT).show()
                         }
                     }
 

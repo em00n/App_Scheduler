@@ -11,16 +11,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.emon.appscheduler.R
 import com.emon.appscheduler.base.BaseFragment
-import com.emon.appscheduler.data.model.AppInfo
 import com.emon.appscheduler.data.model.Schedule
 import com.emon.appscheduler.databinding.FragmentScheduleBinding
-import com.emon.appscheduler.databinding.SchedulerDialogBinding
 import com.emon.appscheduler.databinding.UpdateScheduleTimeDialogBinding
-import com.emon.appscheduler.ui.AppInfoSpinnerAdapter
 import com.emon.appscheduler.ui.ScheduleViewModel
 import com.emon.appscheduler.utils.ScheduleStatus
 import com.emon.appscheduler.utils.autoCleared
-import com.emon.appscheduler.utils.extensions.getInstalledAppsInfo
 import com.emon.appscheduler.utils.extensions.getNextScheduledTime
 import com.emon.appscheduler.utils.extensions.setUpVerticalRecyclerView
 import com.emon.appscheduler.utils.extensions.timeFormat
@@ -95,7 +91,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>() {
                     Toast.makeText(requireContext(), getString(R.string.time_updated), Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 } else {
-                    Toast.makeText(requireContext(), "This time slot is already taken!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.this_time_slot_is_already_taken), Toast.LENGTH_SHORT).show()
                 }
             }
         }
