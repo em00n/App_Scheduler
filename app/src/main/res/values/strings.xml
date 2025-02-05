@@ -18,4 +18,5 @@
     <string name="message_for_floating_permission">To allow background app launching, enable \'Display over other apps\' permission. This is required to keep the scheduled app launch working even when your app is not active.</string>
     <string name="grant_permission">Grant Permission</string>
     <string name="cancel">Cancel</string>
+    <string name="loading_apps">Loading Apps</string>
 </resources>

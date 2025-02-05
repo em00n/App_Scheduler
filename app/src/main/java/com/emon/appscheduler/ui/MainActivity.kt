@@ -3,6 +3,7 @@ package com.emon.appscheduler.ui
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -26,8 +27,10 @@ import com.emon.appscheduler.utils.extensions.getInstalledAppsInfo
 import com.emon.appscheduler.utils.extensions.getNextScheduledTime
 import com.emon.appscheduler.utils.extensions.timeFormat
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 @AndroidEntryPoint
@@ -36,6 +39,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     private lateinit var navController: NavController
     private val viewModel: ScheduleViewModel by viewModels()
     private var isDoubleBackPressToExit = false
+    lateinit var installedApps:List<AppInfo>
 
     override fun viewBindingLayout(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
 
@@ -46,12 +50,28 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         binding.bottomNav.setupWithNavController(navController)
         setupOnBackPressed()
 
+        lifecycleScope.launch {
+            installedApps = loadInstalledApps(this@MainActivity).toMutableList().apply {
+                add(0, AppInfo("", getString(R.string.select_app), null))
+            }
+        }
+
         binding.addScheduleButton.setOnClickListener {
             if (!checkFloatingPermission()) {
                 showMessageForFloatingPermission()
-            }else{
-                openSchedulerDialog()
+            } else {
+                if (::installedApps.isInitialized && installedApps.isNotEmpty()) {
+                    openSchedulerDialog(installedApps)
+                } else {
+                    Toast.makeText(this, getString(R.string.loading_apps), Toast.LENGTH_SHORT).show()
+                }
             }
+        }
+    }
+    
+    private suspend fun loadInstalledApps(context: Context): List<AppInfo> {
+        return withContext(Dispatchers.IO) {
+            getInstalledAppsInfo(context)
         }
     }
 
@@ -108,17 +128,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     private val startActivityFloatingPermission = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            // Permission granted
-        } else {
-            // If permission is not granted
-            if (!checkFloatingPermission()) {
-                showMessageForFloatingPermission()
-            }
+        if (result.resultCode != Activity.RESULT_OK && !checkFloatingPermission()) {
+            showMessageForFloatingPermission()
         }
     }
 
-    private fun openSchedulerDialog() {
+    private fun openSchedulerDialog(installedApps:List<AppInfo>) {
 
         val dialogBinding = SchedulerDialogBinding.inflate(layoutInflater)
         val dialog = AlertDialog.Builder(this)
@@ -126,32 +141,27 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             .show()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        val installedApps = getInstalledAppsInfo(this) as ArrayList
-        installedApps.add(0, AppInfo("", getString(R.string.select_app), null))
-
         val adapter = AppInfoSpinnerAdapter(this, installedApps)
         dialogBinding.appSpinner.adapter = adapter
 
         var scheduledTime: Long? = null
         dialogBinding.selectTimeButton.setOnClickListener {
-
             val cal = Calendar.getInstance()
             val hour = cal.get(Calendar.HOUR_OF_DAY)
             val minute = cal.get(Calendar.MINUTE)
 
-            val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minuteOfDay ->
+            TimePickerDialog(this, { _, hourOfDay, minuteOfDay ->
                 scheduledTime = getNextScheduledTime(hourOfDay, minuteOfDay)
                 dialogBinding.pickedTime.text = timeFormat(scheduledTime!!)
-            }
-            TimePickerDialog(this, timeSetListener, hour, minute, false).show()
+            }, hour, minute, false).show()
         }
 
         dialogBinding.addScheduleBtn.setOnClickListener {
-
-            if (dialogBinding.appSpinner.selectedItemPosition != 0) {
+            val selectedPosition = dialogBinding.appSpinner.selectedItemPosition
+            if (selectedPosition != 0) {
                 if (dialogBinding.pickedTime.text != getString(R.string.time)) {
 
-                    val appInfo = installedApps[dialogBinding.appSpinner.selectedItemPosition]
+                    val appInfo = installedApps[selectedPosition]
                     val schedule = Schedule(
                         appPackageName = appInfo.packageName,
                         appName = appInfo.appName,
@@ -168,8 +178,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                         }
                     }
 
-                } else Toast.makeText(this, getString(R.string.select_time), Toast.LENGTH_SHORT).show()
-            } else Toast.makeText(this, getString(R.string.select_app), Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, getString(R.string.select_time), Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, getString(R.string.select_app), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
