@@ -3,11 +3,11 @@
 An Android app that allows users to schedule installed apps to launch automatically at a specific time, manage schedules, and track execution history.
 
 ## 📌 Features
-✅ Schedule Apps – Select an installed app and set a time for it to launch automatically.
-✅ Modify Schedule – Edit an existing schedule before execution.
-✅ Cancel Schedule – Remove a scheduled app if it hasn't been launched yet.
-✅ Multiple Schedules – Supports multiple scheduled apps with no time conflicts.
-✅ Execution Records – Tracks whether scheduled apps were launched successfully.
+ - Schedule Apps – Select an installed app and set a time for it to launch automatically.
+ - Modify Schedule – Edit an existing schedule before execution.
+ - Cancel Schedule – Remove a scheduled app if it hasn't been launched yet.
+ - Multiple Schedules – Supports multiple scheduled apps with no time conflicts.
+ - Execution Records – Tracks whether scheduled apps were launched successfully.
 
 ## 🛠 Tech Stack
 - Language: Kotlin
