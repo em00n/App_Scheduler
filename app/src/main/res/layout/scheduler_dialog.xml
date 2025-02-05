@@ -6,6 +6,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
     app:cardCornerRadius="15dp"
+    android:background="@color/white"
+    app:cardBackgroundColor="@color/white"
     app:cardUseCompatPadding="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,6 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/time"
+            android:textColor="@color/black"
             app:layout_constraintTop_toTopOf="@id/selectTimeButton"
             app:layout_constraintBottom_toBottomOf="@id/selectTimeButton"
             app:layout_constraintStart_toStartOf="parent"
